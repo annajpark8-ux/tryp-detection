@@ -70,33 +70,6 @@ README.md
 
 ---
 
-## Pipeline Overview
-
-```
-Raw Tryp Dataset (COCO format)
-        │
-        ▼
-[1_preprocessing/coco_to_yolo.py]  -> Convert annotations to YOLO format
-        │
-        ▼
-[1_preprocessing/preprocess.py]    -> Split into train/val/test (3:1:1)
-        │
-        ▼
-[2_training/...ipynb]              -> Train YOLOv7-tiny on Colab T4 GPU (100 epochs)
-        │
-        ▼
-[2_training/...ipynb]              -> Export trained model to ONNX format
-        │
-        ▼
-[3_evaluation/...ipynb]            -> Generate confusion matrix, F1 curve, PR curve
-        │
-        ▼
-[tryp_yolov7_results/tryp_detect.py] -> Run on individual images via command line
-[tryp_yolov7_results/app.py]         -> Run via Streamlit web interface
-```
-
----
-
 ## Run Order
 
 ### 1. Preprocessing (one-time)
