@@ -26,27 +26,28 @@ This project trains a lightweight object detection model on the Tryp dataset (An
 code/
 ├── README.md
 ├── 1_preprocessing/
-│   ├── coco_to_yolo.py          # Convert COCO JSON to YOLO format labels
-│   └── preprocess.py             # Organize dataset into train/val/test folders
+│   ├── coco_to_yolo.py           # Convert COCO JSON to YOLO format labels
+│   └── preprocess.py              # Organize dataset into train/val/test folders
 ├── 2_training/
 │   ├── YOLOv7_Tiny_Trypanosome_Training.ipynb
-│   ├── tryp.yaml                 # Data config used by YOLOv7
-│   └── yolov7-tiny-tryp.yaml     # Model config (modified for 1 class)
+│   ├── tryp.yaml                  # Data config used by YOLOv7
+│   └── yolov7-tiny-tryp.yaml      # Model config (modified for 1 class)
 ├── 3_evaluation/
-│   └── CPU_evaluation.ipynb      # Re-run evaluation on CPU to generate plots
-├── 4_deployment/
-│   ├── export_onnx.py            # Standalone PyTorch → ONNX exporter (CPU)
-│   ├── tryp_detect.py            # CLI inference script (CPU, ONNX)
-│   └── app.py                    # Streamlit web interface
+│   └── CPU_evaluation.ipynb       # Re-run evaluation on CPU to generate plots
+├── tryp_yolov7_results/           # Deployment package (move/copy to laptop)
+│   ├── weights/
+│   │   ├── best.pt                # Trained PyTorch weights
+│   │   └── best.onnx              # Exported ONNX model for CPU inference
+│   ├── tryp_detect.py             # CLI inference script (CPU, ONNX)
+│   ├── app.py                     # Streamlit web interface
+│   └── export_onnx.py             # Standalone PyTorch → ONNX exporter
 └── utils/
-    └── visualize_labels.py       # Visualize YOLO labels overlaid on images
+    └── visualize_labels.py        # Visualize YOLO labels overlaid on images
 ```
 
 ---
 
 ## Pipeline Overview
-
-The project follows this end-to-end pipeline:
 
 ```
 Raw Tryp Dataset (COCO format)
@@ -67,8 +68,8 @@ Raw Tryp Dataset (COCO format)
 [3_evaluation/...ipynb]            → Generate confusion matrix, F1 curve, PR curve
         │
         ▼
-[4_deployment/tryp_detect.py]      → Run on individual images via command line
-[4_deployment/app.py]              → Run via Streamlit web interface
+[tryp_yolov7_results/tryp_detect.py] → Run on individual images via command line
+[tryp_yolov7_results/app.py]         → Run via Streamlit web interface
 ```
 
 ---
@@ -85,7 +86,7 @@ python 1_preprocessing/coco_to_yolo.py
 python 1_preprocessing/preprocess.py
 ```
 
-This produces a `preprocessed/` folder with the following structure:
+This produces a `preprocessed/` folder with the structure:
 ```
 preprocessed/
 ├── images/{train,val,test}/
@@ -100,7 +101,7 @@ Open `2_training/YOLOv7_Tiny_Trypanosome_Training.ipynb` in Google Colab.
 2. Upload `preprocessed.zip` to Colab via the sidebar
 3. Run all cells
 
-Training takes ~2–3 hours for 100 epochs. Weights are saved to Google Drive at `/MyDrive/tryp_yolov7_results/`.
+Training takes ~2–3 hours for 100 epochs. Weights and the ONNX export are saved to Google Drive at `/MyDrive/tryp_yolov7_results/`.
 
 ### 3. Evaluation (CPU is sufficient)
 
@@ -108,29 +109,35 @@ Open `3_evaluation/CPU_evaluation.ipynb` in Colab. Re-runs test.py to regenerate
 
 ### 4. Deployment (on local laptop)
 
+Download the `tryp_yolov7_results/` folder from Google Drive to your laptop.
+
 **One-time setup:**
 ```bash
 pip install onnxruntime opencv-python numpy streamlit Pillow
 ```
 
-**Export PyTorch weights to ONNX** (only if you don't already have `best.onnx`):
+**If you only have `best.pt` and need to export to ONNX:**
 ```bash
-python 4_deployment/export_onnx.py
+cd tryp_yolov7_results
+python export_onnx.py
 ```
 
 **Run detection on a single image:**
 ```bash
-python 4_deployment/tryp_detect.py --source path/to/image.jpg
+cd tryp_yolov7_results
+python tryp_detect.py --source path/to/image.jpg
 ```
 
 **Run detection on a folder of images:**
 ```bash
-python 4_deployment/tryp_detect.py --source path/to/folder/
+cd tryp_yolov7_results
+python tryp_detect.py --source path/to/folder/
 ```
 
 **Launch the web interface:**
 ```bash
-streamlit run 4_deployment/app.py
+cd tryp_yolov7_results
+streamlit run app.py
 ```
 
 The Streamlit app opens at `http://localhost:8501` in your browser.
@@ -151,8 +158,12 @@ The Streamlit app opens at `http://localhost:8501` in your browser.
 ### Evaluation
 - **`CPU_evaluation.ipynb`** — Standalone notebook for regenerating evaluation plots (confusion matrix, F1 curve, PR curve) by re-running `test.py` on CPU.
 
-### Deployment
-- **`export_onnx.py`** — Self-contained script that exports a trained `best.pt` to `best.onnx` on a CPU-only laptop. Clones YOLOv7 and handles all dependencies automatically.
+### Deployment (`tryp_yolov7_results/`)
+This entire folder is the self-contained deployment package. Copy it to any laptop to run inference.
+
+- **`weights/best.pt`** — Trained PyTorch model weights.
+- **`weights/best.onnx`** — ONNX-exported model for fast CPU inference.
+- **`export_onnx.py`** — Self-contained script that exports `best.pt` to `best.onnx` on a CPU-only laptop. Clones YOLOv7 and handles all dependencies automatically.
 - **`tryp_detect.py`** — Command-line inference tool. Loads the ONNX model, runs detection on an image or folder, draws bounding boxes, and saves annotated results.
 - **`app.py`** — Streamlit web interface. Lets users upload images via a browser, adjust the confidence threshold, and view detection results side-by-side with the original image.
 
