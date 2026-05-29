@@ -1,0 +1,6 @@
+train: /content/preprocessed/images/train
+val: /content/preprocessed/images/val
+test: /content/preprocessed/images/test
+
+nc: 1
+names: ['trypanosome']
