@@ -24,23 +24,24 @@ This project trains a lightweight object detection model on the Tryp dataset (An
 
 ```
 code/
-├── README.md
 ├── 1_preprocessing/
-│   ├── coco_to_yolo.py           # Convert COCO JSON to YOLO format labels
+│   ├── coco_to_yolo.py            # Convert COCO JSON to YOLO format labels
 │   └── preprocess.py              # Organize dataset into train/val/test folders
 ├── 2_training/
 │   ├── YOLOv7_Tiny_Trypanosome_Training.ipynb
-│   ├── tryp.yaml                  # Data config used by YOLOv7
-│   └── yolov7-tiny-tryp.yaml      # Model config (modified for 1 class)
+│   └── tryp.yaml                  # Data config used by YOLOv7
 ├── 3_evaluation/
 │   └── CPU_evaluation.ipynb       # Re-run evaluation on CPU to generate plots
-├── tryp_yolov7_results/           # Deployment package (move/copy to laptop)
+├── tryp_yolov7_results/           # Deployment package
 │   ├── weights/
+│   │   ├── best.onnx              # Exported ONNX model for CPU inference
 │   │   ├── best.pt                # Trained PyTorch weights
-│   │   └── best.onnx              # Exported ONNX model for CPU inference
+│   │   ├── best.torchscript.pt   
+│   │   ├── init.pt                # Initial  weights
+│   │   └── last.pt                # Most recent epoch weights
 │   ├── tryp_detect.py             # CLI inference script (CPU, ONNX)
 │   ├── app.py                     # Streamlit web interface
-│   └── export_onnx.py             # Standalone PyTorch → ONNX exporter
+│   └── export_onnx.py             # ONNX exporter
 └── utils/
     └── visualize_labels.py        # Visualize YOLO labels overlaid on images
 ```
@@ -53,23 +54,23 @@ code/
 Raw Tryp Dataset (COCO format)
         │
         ▼
-[1_preprocessing/coco_to_yolo.py]  → Convert annotations to YOLO format
+[1_preprocessing/coco_to_yolo.py]  -> Convert annotations to YOLO format
         │
         ▼
-[1_preprocessing/preprocess.py]    → Split into train/val/test (3:1:1)
+[1_preprocessing/preprocess.py]    -> Split into train/val/test (3:1:1)
         │
         ▼
-[2_training/...ipynb]              → Train YOLOv7-tiny on Colab T4 GPU (100 epochs)
+[2_training/...ipynb]              -> Train YOLOv7-tiny on Colab T4 GPU (100 epochs)
         │
         ▼
-[2_training/...ipynb]              → Export trained model to ONNX format
+[2_training/...ipynb]              -> Export trained model to ONNX format
         │
         ▼
-[3_evaluation/...ipynb]            → Generate confusion matrix, F1 curve, PR curve
+[3_evaluation/...ipynb]            -> Generate confusion matrix, F1 curve, PR curve
         │
         ▼
-[tryp_yolov7_results/tryp_detect.py] → Run on individual images via command line
-[tryp_yolov7_results/app.py]         → Run via Streamlit web interface
+[tryp_yolov7_results/tryp_detect.py] -> Run on individual images via command line
+[tryp_yolov7_results/app.py]         -> Run via Streamlit web interface
 ```
 
 ---
@@ -140,7 +141,7 @@ cd tryp_yolov7_results
 streamlit run app.py
 ```
 
-The Streamlit app opens at `http://localhost:8501` in your browser.
+The Streamlit app opens at `http://localhost:8501` in browser.
 
 ---
 
@@ -207,7 +208,6 @@ This project uses the **Tryp dataset** by Anzaku et al. (2023):
 
 1. E. T. Anzaku et al., "Tryp: A dataset of microscopy images of unstained thick blood smears for trypanosome detection," *Sci. Data*, vol. 10, p. 716, 2023.
 2. C.-Y. Wang, A. Bochkovskiy, and H.-Y. M. Liao, "YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors," arXiv:2207.02696, 2022.
-3. V. Kittichai et al., "Superior auto-identification of trypanosome parasites by using a hybrid deep-learning model," *J. Vis. Exp.*, no. 200, 2023.
 
 ---
 
