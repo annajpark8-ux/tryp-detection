@@ -44,6 +44,28 @@ code/
 │   └── export_onnx.py             # ONNX exporter
 └── utils/
     └── visualize_labels.py        # Visualize YOLO labels overlaid on images
+
+datasets/
+├── preprocessed/
+│   ├── images/
+│   │   ├── train/
+│   │   ├── test/
+│   │   └── val/
+│   └── labels/
+│       ├── train/
+│       ├── test/
+│       └── val/
+└── Tryp_original/
+    ├── negative_images/
+    ├── positive_images/
+    │   ├── train/
+    │   ├── test/
+    │   └── validation/
+    └── videos/
+        ├── negative/
+        └── postitive/
+
+README.md
 ```
 
 ---
