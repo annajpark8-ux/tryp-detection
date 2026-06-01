@@ -94,7 +94,7 @@ preprocessed/
 
 Open `2_training/YOLOv7_Tiny_Trypanosome_Training.ipynb` in Google Colab.
 
-1. Set Runtime → GPU (T4)
+1. Set Runtime -> GPU (T4)
 2. Upload `preprocessed.zip` to Colab via the sidebar
 3. Run all cells
 
